@@ -1,6 +1,10 @@
 package ChatApplication.Clientt;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Socket;
 
 import javax.swing.JFrame;
@@ -17,9 +21,25 @@ public class Client {
     private JScrollPane scrollpane;
     private JTextField tf;
 
+    private DataInputStream dis;
+    private DataOutputStream dos;
+
     private Socket socket;
 
     String ipaddress;
+
+
+    
+    //---------------------------------------Thread Created---------------------------------
+    Thread thread = new Thread(){
+        public void run(){
+            while ( true) {
+                readMessage();
+            }
+        }
+    };
+    //-----------------------------------------Thread creation end-----------------------------------------------
+
 
     Client()
     {
@@ -46,6 +66,14 @@ public class Client {
                 clientFrame.add(scrollpane);
 
                 tf = new JTextField();
+                tf.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e){
+                        sendMessage(tf.getText());
+                        ta.append(tf.getText() + "\n");
+                        tf.setText("");
+                    }
+                });
                 clientFrame.add(tf, BorderLayout.SOUTH);
 
                 clientFrame.setVisible(true);
@@ -56,10 +84,26 @@ public class Client {
         
     }
 
+    //Working on Input and output stream
+    void setIOStream()
+    {
+        thread.start();
+         try 
+         {
+            dis = new DataInputStream(socket.getInputStream());
+            dos = new DataOutputStream(socket.getOutputStream());
+         } 
+         catch (Exception e)  
+         {
+            System.out.println(e);
+         }
+
+    }
+
     void connectToServer()
     {
 
-        try 
+        try
         {
             socket = new Socket(ipaddress, 1111);
         } 
@@ -69,4 +113,41 @@ public class Client {
         }
         
     }
+
+    //method for message sending
+    public void sendMessage(String message)
+    {
+
+        try 
+        {
+            dos.writeUTF(message);
+            dos.flush();
+        } 
+        catch (Exception e) 
+        {
+            System.out.println(e);
+        }
+    }
+
+      //Mesage for reading the data
+    public void readMessage()
+    {
+        try 
+        {
+            String message = dis.readUTF();
+            showMessage(message);
+            
+        } 
+        catch (Exception e) 
+        {
+            System.out.println(e);
+        }
+    }
+
+    public void showMessage(String message)
+    {
+        //Appending messaget to text feild
+        ta.append(message + "\n");
+    }
+
 }
