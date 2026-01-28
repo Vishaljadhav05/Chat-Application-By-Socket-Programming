@@ -59,3 +59,6 @@ chatApplication/
 ---
 
 ⭐ Feel free to explore, practice, and improve your **Java Swing & Socket Programming skills**!
+
+<img width="1743" height="861" alt="Server IP" src="https://github.com/user-attachments/assets/5ba09ceb-e02e-4a8d-8429-2e60a5cd1d6c" />
+
