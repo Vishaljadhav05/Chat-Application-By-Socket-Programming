@@ -1,12 +1,17 @@
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -42,11 +47,14 @@ public class Server
     {
         
         serverFrame = new JFrame("Server");
-        serverFrame.setSize(500,500);
+        serverFrame.setSize(600,600);
         serverFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         ta = new JTextArea();
         ta.setEditable(false);
+
+        Font font = new Font("Arial", 1, 16);
+        ta.setFont(font);
 
         scrollpane = new JScrollPane(ta);
         serverFrame.add(scrollpane);
@@ -112,7 +120,6 @@ public class Server
     //Working on Input and output stream
     void setIOStream()
     {
-        thread.start();
          try 
          {
             dis = new DataInputStream(socket.getInputStream());
@@ -123,8 +130,7 @@ public class Server
          {
             System.out.println(e);
          }
-
-   
+         thread.start();
     }
 
     //method for message sending
@@ -148,7 +154,8 @@ public class Server
         try 
         {
             String message = dis.readUTF();
-            showMessage(message);
+            showMessage( "Client: "+ message);
+            //chatSoundRecieve();
             
         } 
         catch (Exception e) 
@@ -161,8 +168,39 @@ public class Server
     {
         //Appending messaget to text feild
         ta.append(message + "\n");
+        chatSoundSend();
     }
 
 
-
+    public void chatSoundSend()
+    {
+        try 
+        {
+            String soundName = "F:\\SP Core Java\\Code\\Chat_Application_Project_Socket_Prog\\ChatApplication\\Sound\\Send.wav";    
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundName));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } 
+        catch (Exception e) 
+        {
+           System.out.println(e);
+        }
+    }
+// cONTTRADICTING SO , COMMENTED
+    // public void chatSoundRecieve()
+    // {
+    //     try 
+    //     {
+    //         String soundName = "F:\\SP Core Java\\Code\\Chat_Application_Project_Socket_Prog\\ChatApplication\\Sound\\Recieve.wav";    
+    //         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundName));
+    //         Clip clip = AudioSystem.getClip();
+    //         clip.open(audioInputStream);
+    //         clip.start();
+    //     } 
+    //     catch (Exception e) 
+    //     {
+    //        System.out.println(e);
+    //     }
+    // }
 }
